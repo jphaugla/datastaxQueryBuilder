@@ -1,0 +1,25 @@
+version: '2'
+services:
+  main_node:
+    image: "datastax/dse-server"
+    container_name: "dse"
+    hostname: dse
+    ports:
+    - "7199:7199"
+    - "8182:8182"
+    - "8983:8983"
+    - "9042:9042"
+    environment:
+      - DS_LICENSE=accept
+      - CLUSTER_NAME=main
+    # Allow DSE to lock memory with mlock
+    cap_add:
+    - IPC_LOCK
+    ulimits:
+      memlock: -1
+    volumes:
+      - ./data:/var/lib/cassandra/data
+      - ./conf:/config
+      - ./logs:/var/lib/cassandra/commit_logs
+      - ./cache:/var/lib/cassandra/saved_caches
+      - ./confy:/etc/dse/conf
