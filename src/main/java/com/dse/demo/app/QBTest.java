@@ -95,8 +95,10 @@ public class QBTest {
 
 		ResultSet rs3 = session.execute(preparedCountAll.bind("bob@example.com"));
 		System.out.println("Count All");
-		Row row3 = rs3.one();
-		System.out.println(row3.getLong(0));
+		for (Row row3 : rs3) {
+			System.out.println(row3.getLong(0));
+		}
 
+		session.close();
 	}
 }

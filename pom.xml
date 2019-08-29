@@ -92,10 +92,18 @@
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>
 					</descriptorRefs>
-					<finalName>authtest</finalName>
+					<finalName>QBTestwDEP</finalName>
 					<appendAssemblyId>false</appendAssemblyId>
 				</configuration>
 			</plugin>
+			<plugin>
+			            <groupId>org.codehaus.mojo</groupId>
+			            <artifactId>exec-maven-plugin</artifactId>
+			            <version>1.2.1</version>
+			            <configuration>
+					<mainClass>com.dse.demo.app.QBTest</mainClass>
+			            </configuration>
+		        </plugin>
 		</plugins>
 	</build>
 

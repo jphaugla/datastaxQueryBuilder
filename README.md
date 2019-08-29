@@ -36,6 +36,21 @@ docker exec dse cqlsh -e "desc keyspaces"
 ```bash
 docker exec -it dse cqlsh
 ```
+
+## The java code
+
+The java code demonstrates opening a cassandra session using the datastax driver.  Next, standard statement execution is used to create a keyspace and a table.  Then, inserts and reads are performed using various techniques to document simple statements and QueryBuilder methods.  mvn is used to execute all of this
+
+## To execute the code
+
+1. Complile the code
+```bash
+mvn package
+```
+2. Execute the code
+```bash
+mvn exec:java
+```
 ## Conclusion
 At this point, run throught the cql worksheet and enjoy playing with Cassandra!
 
