@@ -16,27 +16,26 @@ import static com.datastax.oss.driver.api.querybuilder.QueryBuilder.selectFrom;
 public class QBTest {
 
 	public static void main(String[] args) {
-
+//  put node name, username, and password here
 		String node = "jphmac";
 		String username = "cassandra";
 		String upass = "cassandra";
+		String dcname = "dc1";
 
 		CqlSession session;
 
 		// Connect to the cluster and keyspace "authtest"
-		session = DseSession.builder().addContactPoint(new InetSocketAddress(node, 9042)).withLocalDatacenter("dc1").build();
+		session = DseSession.builder().addContactPoint(new InetSocketAddress(node, 9042)).withAuthCredentials(username,upass).withLocalDatacenter(dcname).build();
 
-
-				// withAuthCredentials(username,upass).build();
 
 		// Create keyspace and table
 		session.execute("CREATE KEYSPACE IF NOT EXISTS authtest WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};");
 		session.execute("CREATE TABLE IF NOT EXISTS authtest.users (email text PRIMARY KEY, age int, city text, firstname text, lastname text);");
-
+		//  this is not query builder-this is a simple insert
 		// Insert one record into the users table
 		session.execute("INSERT INTO authtest.users (lastname, age, city, email, firstname) VALUES ('Jones', 35, 'Austin', 'bob@example.com', 'Bob')");
 
-		// Select from table
+		// Simple Select from table
 		ResultSet results = session.execute("SELECT * FROM authtest.users");
 		for (Row row : results) {
 			System.out.println("simple session execute");
@@ -65,7 +64,7 @@ public class QBTest {
 		ResultSet rs1 = session.execute(preparedSelectUser.bind("bob@example.com"));
 		Row row1 = rs1.one();
 		System.out.println(row1.getString("email") + " " + row1.getString("firstname") + " " + row1.getString("lastname"));
-			// INSERT INTO ks.users (id,first_name,last_name) VALUES (:id,:first_name,:last_name) USING TTL :ttl
+			// INSERT INTO authtest.users (email,firstname,lastname,city,age) VALUES (:email,:firstname,:lastname,:city,:age) USING TTL :ttl
 
 		BuildableQuery query1 = DseQueryBuilder.insertInto("authtest", "users")
 				.value("email", DseQueryBuilder.bindMarker("email"))
@@ -87,13 +86,17 @@ public class QBTest {
 		session.execute(boundStatement);
 
 		//  final count all
-		Select query3 =
+		Select selectCountAll =
 				DseQueryBuilder.selectFrom("authtest", "users")
 						.countAll()
 						.whereColumn("email")
 						.isEqualTo(DseQueryBuilder.bindMarker("email"));
-		SimpleStatement statement1 = query3.build();
-		ResultSet rs3 = session.execute(statement1);
+		PreparedStatement preparedCountAll = session.prepare(selectCountAll.build());
+
+		ResultSet rs3 = session.execute(preparedCountAll.bind("bob@example.com"));
+		System.out.println("Count All");
+		Row row3 = rs3.one();
+		System.out.println(row3.getLong(0));
 
 	}
 }
